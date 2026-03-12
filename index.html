@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🔮 塔罗占卜 · 三牌阵</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', '微软雅黑', sans-serif;
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 900px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #ffd700;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 0 20px rgba(255,215,0,0.3);
+            letter-spacing: 4px;
+        }
+        
+        .subtitle {
+            text-align: center;
+            color: #a8b2d1;
+            margin-bottom: 30px;
+            font-style: italic;
+        }
+        
+        .question-area {
+            background: rgba(0,0,0,0.3);
+            border-radius: 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            border: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        label {
+            display: block;
+            color: #ffd700;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+            font-weight: 500;
+        }
+        
+        input, textarea {
+            width: 100%;
+            padding: 15px;
+            background: rgba(255,255,255,0.05);
+            border: 2px solid rgba(255,215,0,0.3);
+            border-radius: 12px;
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s;
+            margin-bottom: 20px;
+        }
+        
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: #ffd700;
+            background: rgba(255,255,255,0.1);
+            box-shadow: 0 0 15px rgba(255,215,0,0.3);
+        }
+        
+        .draw-btn {
+            background: linear-gradient(135deg, #ffd700, #ffa500);
+            color: #1a1a2e;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 0 auto 20px;
+            box-shadow: 0 5px 20px rgba(255,215,0,0.4);
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+        
+        .draw-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(255,215,0,0.6);
+        }
+        
+        .draw-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        /* 洗牌动画区域 */
+        .shuffle-animation {
+            min-height: 200px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .shuffling-card {
+            width: 80px;
+            height: 120px;
+            background: linear-gradient(145deg, #4a2c2c, #2a1a1a);
+            border-radius: 10px;
+            position: absolute;
+            border: 2px solid #ffd700;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.5);
+            animation: shuffle 0.5s infinite alternate;
+        }
+        
+        @keyframes shuffle {
+            from { transform: translateX(-50px) rotate(-10deg); }
+            to { transform: translateX(50px) rotate(10deg); }
+        }
+        
+        /* 卡片结果展示 */
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin: 40px 0;
+        }
+        
+        .card-item {
+            flex: 1 1 250px;
+            max-width: 280px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 20px;
+            padding: 20px;
+            border: 1px solid rgba(255,215,0,0.3);
+            backdrop-filter: blur(5px);
+            transition: all 0.3s;
+            opacity: 0;
+            transform: translateY(20px);
+            animation: fadeInUp 0.5s forwards;
+        }
+        
+        .card-item:nth-child(1) { animation-delay: 0.2s; }
+        .card-item:nth-child(2) { animation-delay: 0.6s; }
+        .card-item:nth-child(3) { animation-delay: 1.0s; }
+        
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .card-item:hover {
+            border-color: #ffd700;
+            box-shadow: 0 10px 30px rgba(255,215,0,0.2);
+        }
+        
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,215,0,0.3);
+        }
+        
+        .card-name {
+            color: #ffd700;
+            font-size: 1.3rem;
+            font-weight: bold;
+        }
+        
+        .card-position {
+            background: rgba(255,215,0,0.2);
+            color: #ffd700;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+        }
+        
+        .orientation-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            margin: 5px 0;
+        }
+        
+        .upright {
+            background: rgba(0,255,0,0.2);
+            color: #90ff90;
+        }
+        
+        .reversed {
+            background: rgba(255,0,0,0.2);
+            color: #ff9090;
+        }
+        
+        .card-keywords {
+            color: #a8b2d1;
+            font-size: 0.9rem;
+            margin: 10px 0;
+            padding: 8px;
+            background: rgba(0,0,0,0.2);
+            border-radius: 8px;
+        }
+        
+        .card-meaning {
+            color: white;
+            line-height: 1.6;
+            margin-top: 10px;
+            font-size: 0.95rem;
+        }
+        
+        .question-display {
+            background: rgba(255,215,0,0.1);
+            border-left: 4px solid #ffd700;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            color: white;
+            font-style: italic;
+        }
+        
+        .interpretation-note {
+            text-align: center;
+            color: #a8b2d1;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            padding-top: 20px;
+        }
+        
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔮 塔罗占卜·三牌阵</h1>
+        <div class="subtitle">Three-Card Spread · 过去 · 现在 · 未来</div>
+        
+        <div class="question-area">
+            <label>✨ 请输入你想问的问题</label>
+            <textarea id="questionInput" rows="3" placeholder="例如：我最近的工作发展会如何？..."></textarea>
+            <button id="drawBtn" class="draw-btn">🎴 开始抽牌</button>
+        </div>
+        
+        <!-- 洗牌动画（初始隐藏） -->
+        <div id="shuffleContainer" class="shuffle-animation hidden">
+            <div class="shuffling-card"></div>
+            <div class="shuffling-card" style="animation-delay: 0.2s;"></div>
+            <div class="shuffling-card" style="animation-delay: 0.4s;"></div>
+        </div>
+        
+        <!-- 抽牌结果（初始隐藏） -->
+        <div id="resultContainer" class="hidden">
+            <div id="questionDisplay" class="question-display"></div>
+            
+            <div id="cardsContainer" class="cards-container">
+                <!-- 卡片会通过 JavaScript 动态生成 -->
+            </div>
+            
+            <div class="interpretation-note">
+                ⚡ 牌面解读：每张牌的正位/逆位含义已根据传统塔罗牌义生成 [citation:3][citation:6]
+            </div>
+        </div>
+    </div>
+    
+    <script src="tarot-cards.json"></script>
+    <script>
+        // 塔罗牌数据（从 tarot-cards.json 加载）
+        // 注意：实际使用时需要把 JSON 文件的内容赋值给这个变量
+        let tarotDeck = [];
+        
+        // 加载塔罗牌数据
+        fetch('tarot-cards.json')
+            .then(response => response.json())
+            .then(data => {
+                tarotDeck = data;
+                console.log('✅ 塔罗牌数据加载完成，共', tarotDeck.length, '张牌');
+            })
+            .catch(error => {
+                console.error('❌ 加载塔罗牌数据失败:', error);
+                // 如果加载失败，用一些示例数据
+                tarotDeck = [
+                    { name: "愚者", suit: "major", keywords: ["开始", "自由", "天真"], meanings: { upright: "新的开始、冒险、自由", reversed: "鲁莽、愚蠢、不负责" } },
+                    { name: "魔术师", suit: "major", keywords: ["能力", "专注", "行动"], meanings: { upright: "掌握技能、专注力、创造力", reversed: "欺骗、浪费天赋" } },
+                    { name: "女祭司", suit: "major", keywords: ["直觉", "神秘", "智慧"], meanings: { upright: "直觉、内在智慧、神秘", reversed: "表面、肤浅、秘密" } },
+                    // ... 实际应该有78张
+                ];
+            });
+        
+        // 获取页面元素
+        const questionInput = document.getElementById('questionInput');
+        const drawBtn = document.getElementById('drawBtn');
+        const shuffleContainer = document.getElementById('shuffleContainer');
+        const resultContainer = document.getElementById('resultContainer');
+        const questionDisplay = document.getElementById('questionDisplay');
+        const cardsContainer = document.getElementById('cardsContainer');
+        
+        // 洗牌和抽牌函数
+        function shuffleAndDraw() {
+            const question = questionInput.value.trim();
+            if (!question) {
+                alert('请输入你的问题 ✨');
+                return;
+            }
+            
+            // 显示问题
+            questionDisplay.textContent = `✨ 你的问题：${question}`;
+            
+            // 显示洗牌动画，隐藏结果
+            shuffleContainer.classList.remove('hidden');
+            resultContainer.classList.add('hidden');
+            drawBtn.disabled = true;
+            drawBtn.textContent = '🔮 洗牌中...';
+            
+            // 模拟洗牌动画（1.5秒后抽牌）
+            setTimeout(() => {
+                // 随机抽取三张不重复的牌
+                const drawnCards = drawThreeCards();
+                
+                // 隐藏洗牌动画
+                shuffleContainer.classList.add('hidden');
+                
+                // 显示抽牌结果
+                displayCards(drawnCards);
+                resultContainer.classList.remove('hidden');
+                
+                drawBtn.disabled = false;
+                drawBtn.textContent = '🎴 再次抽牌';
+            }, 1500);
+        }
+        
+        // 随机抽三张牌（不重复）
+        function drawThreeCards() {
+            if (!tarotDeck || tarotDeck.length === 0) return [];
+            
+            // 复制一份牌组，避免修改原数组
+            const deckCopy = [...tarotDeck];
+            const drawn = [];
+            
+            // 随机抽三张，Fisher-Yates shuffle 思想 [citation:2]
+            for (let i = 0; i < 3; i++) {
+                if (deckCopy.length === 0) break;
+                
+                const randomIndex = Math.floor(Math.random() * deckCopy.length);
+                const card = { ...deckCopy[randomIndex] }; // 复制卡片，避免引用
+                
+                // 随机决定正位/逆位（50% 概率） [citation:2]
+                card.isReversed = Math.random() > 0.5;
+                
+                // 根据正逆位设置显示的解读文本
+                if (card.isReversed) {
+                    card.displayMeaning = card.meanings.reversed || "逆位解读";
+                    card.orientationText = "逆位";
+                } else {
+                    card.displayMeaning = card.meanings.upright || "正位解读";
+                    card.orientationText = "正位";
+                }
+                
+                drawn.push(card);
+                
+                // 从副本中移除这张牌，确保不重复
+                deckCopy.splice(randomIndex, 1);
+            }
+            
+            return drawn;
+        }
+        
+        // 展示三张牌
+        function displayCards(cards) {
+            cardsContainer.innerHTML = '';
+            
+            const positions = ['过去', '现在', '未来']; // 三牌阵的经典解读方式 [citation:3][citation:6]
+            
+            cards.forEach((card, index) => {
+                const cardEl = document.createElement('div');
+                cardEl.className = 'card-item';
+                
+                // 格式化关键词显示
+                const keywordsText = card.keywords ? card.keywords.join(' · ') : '';
+                
+                cardEl.innerHTML = `
+                    <div class="card-header">
+                        <span class="card-name">${card.name}</span>
+                        <span class="card-position">${positions[index]}</span>
+                    </div>
+                    <div class="orientation-badge ${card.isReversed ? 'reversed' : 'upright'}">
+                        ${card.orientationText}
+                    </div>
+                    <div class="card-keywords">
+                        🔑 ${keywordsText}
+                    </div>
+                    <div class="card-meaning">
+                        ${card.displayMeaning}
+                    </div>
+                `;
+                
+                cardsContainer.appendChild(cardEl);
+            });
+        }
+        
+        // 绑定抽牌按钮事件
+        drawBtn.addEventListener('click', shuffleAndDraw);
+        
+        // 回车键也可以触发（可选）
+        questionInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter' && !e.shiftKey) {
+                e.preventDefault();
+                shuffleAndDraw();
+            }
+        });
+    </script>
+</body>
+</html>
